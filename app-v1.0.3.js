@@ -1,7 +1,6 @@
 // =============================================================================
 // DOM SELECTORS & STATE
 // =============================================================================
-console.log("This is version 1.0.2");
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
@@ -409,13 +408,28 @@ function openNotesModal() {
 	
 	populateNotesModal();
 	
+	const session = getActiveSession();
+	const isCompleted = session?.completed || false;
+	const notesInputGroup = $id('notes-input-group');
+	const notesCompleteMessage = $('.notes-complete-message');
+	
+	if (notesInputGroup) {
+		notesInputGroup.style.display = isCompleted ? 'none' : 'flex';
+	}
+	
+	if (notesCompleteMessage) {
+		notesCompleteMessage.style.display = isCompleted ? 'block' : 'none';
+	}
+	
 	$('.page-modals')?.classList.add('cc-show');
 	$('.modal-overlay')?.classList.add('cc-show');
 	modal.classList.add('cc-show');
 	
 	setTimeout(() => {
-		const textarea = $id('note');
-		textarea?.focus();
+		if (!isCompleted) {
+			const textarea = $id('note');
+			textarea?.focus();
+		}
 		
 		const notesOuter = $('#modal-notes .tab-content-outer');
 		if (notesOuter) {
