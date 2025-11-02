@@ -1,7 +1,7 @@
 // =============================================================================
 // DOM SELECTORS & STATE
 // =============================================================================
-console.log("This is version 1.0.1");
+console.log("This is version 1.0.2");
 
 const $ = (s) => document.querySelector(s);
 const $$ = (s) => document.querySelectorAll(s);
