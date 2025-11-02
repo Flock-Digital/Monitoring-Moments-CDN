@@ -2548,6 +2548,13 @@ function addEventListeners() {
 // =============================================================================
 
 function init() {
+
+	console.log('=== INIT DEBUG ===');
+	console.log('user_id:', localStorage.getItem('user_id'));
+	console.log('active_session:', localStorage.getItem('active_session'));
+	console.log('saved_sessions:', localStorage.getItem('saved_sessions'));
+	console.log('==================');
+	
 	initializePatients();
 	checkValidUser();
 	checkAndInitCarousels();
