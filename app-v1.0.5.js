@@ -1369,7 +1369,19 @@ function goToNextPage() {
 	if (currentPageIndex === pages.length - 1) {
 		openFinishSessionModal();
 	} else {
-		showPage(currentPageIndex + 1);
+		const nextPageIndex = currentPageIndex + 1;
+		showPage(nextPageIndex);
+		
+		if (nextPageIndex === 2) {
+			setTimeout(() => {
+				const modal = $id('modal-monitoring-checklist');
+				if (modal) {
+					$('.page-modals')?.classList.add('cc-show');
+					$('.modal-overlay')?.classList.add('cc-show');
+					modal.classList.add('cc-show');
+				}
+			}, 100);
+		}
 	}
 }
 
