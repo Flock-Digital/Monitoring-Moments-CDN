@@ -2397,10 +2397,12 @@ function handleDeleteSessionCancel() {
 }
 
 function handleNotesButton() {
-	const notesBtn = $id('btn-notes');
-	notesBtn?.addEventListener('click', (e) => {
-		e.preventDefault();
-		openNotesModal();
+	const notesBtns = $$('#btn-notes');
+	notesBtns.forEach(btn => {
+		btn.addEventListener('click', (e) => {
+			e.preventDefault();
+			openNotesModal();
+		});
 	});
 }
 
