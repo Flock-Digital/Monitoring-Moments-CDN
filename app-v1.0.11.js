@@ -2234,7 +2234,7 @@ function calculateSummaryTier() {
     }
     
     // Tier 7: 5 domains present (all except one) AND includes both Skeletal muscle and Pulmonary
-    if (domainCount === 5 && hasDomain('skeletal_muscle') && hasDomain('pulmonary')) {
+    if (domainCount === 5) {
         completeSession();
         return 7;
     }
