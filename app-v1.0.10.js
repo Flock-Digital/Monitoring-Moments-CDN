@@ -2173,9 +2173,119 @@ function cleanupQuestionsScreen() {
 }
 
 function calculateSummaryTier() {
-	// TODO: Add logic to calculate tier based on session data
-	completeSession();
-	return 2;
+    const session = getActiveSession();
+    const selectedItems = session?.selected_checklist_items || [];
+    
+    // Tier 1: No items or only one item selected
+    if (selectedItems.length <= 1) {
+        completeSession();
+        return 1;
+    }
+    
+    // Extract group numbers from checklist_ids (e.g., "01_01" → "01", "01_custom_123" → "01")
+    const groups = selectedItems
+        .map(item => {
+            const match = item.checklist_id.match(/^(\d+)/);
+            return match ? match[1] : null;
+        })
+        .filter(group => group !== null);
+    
+    // Get unique groups (excluding group 11)
+    const uniqueGroupsExcludingOther = [...new Set(groups)].filter(g => g !== '11');
+    
+    // Tier 1: If after excluding group 11, we have 0 or 1 unique groups
+    if (uniqueGroupsExcludingOther.length <= 1) {
+        completeSession();
+        return 1;
+    }
+    
+    // Map groups to domains
+    const domainMap = {
+        'skeletal_muscle': ['01', '02', '03'],
+        'pulmonary': ['04', '05'],
+        'pros': ['06', '07'],
+        'immunogenicity': ['08'],
+        'bio': ['09'],
+        'imaging': ['10']
+        // Note: Group 11 (Other) is not considered a domain
+    };
+    
+    // Determine which domains have selections (excluding group 11)
+    const domainsPresent = new Set();
+    
+    uniqueGroupsExcludingOther.forEach(group => {
+        for (const [domain, groupList] of Object.entries(domainMap)) {
+            if (groupList.includes(group)) {
+                domainsPresent.add(domain);
+                break;
+            }
+        }
+    });
+    
+    const hasDomain = (domain) => domainsPresent.has(domain);
+    const domainCount = domainsPresent.size;
+    
+    // Check from highest tier to lowest (return highest tier they qualify for)
+    
+    // Tier 8: All 6 domains present
+    if (domainCount === 6) {
+        completeSession();
+        return 8;
+    }
+    
+    // Tier 7: 5 domains present (all except one) AND includes both Skeletal muscle and Pulmonary
+    if (domainCount === 5 && hasDomain('skeletal_muscle') && hasDomain('pulmonary')) {
+        completeSession();
+        return 7;
+    }
+    
+    // Tier 6: Skeletal muscle + Pulmonary + (Bio OR PROs) + 1-2 additional domains
+    // This means: SM + Pulmonary + (Bio or PROs) + at least 1 more domain = 4-5 domains total
+    if (hasDomain('skeletal_muscle') && 
+        hasDomain('pulmonary') && 
+        (hasDomain('bio') || hasDomain('pros')) && 
+        domainCount >= 4 && 
+        domainCount <= 5) {
+        completeSession();
+        return 6;
+    }
+    
+    // Tier 5: Skeletal muscle + Pulmonary + Imaging (exactly these 3)
+    if (hasDomain('skeletal_muscle') && 
+        hasDomain('pulmonary') && 
+        hasDomain('imaging') && 
+        domainCount === 3) {
+        completeSession();
+        return 5;
+    }
+    
+    // Tier 4: Skeletal muscle + Pulmonary + Bio (exactly these 3)
+    if (hasDomain('skeletal_muscle') && 
+        hasDomain('pulmonary') && 
+        hasDomain('bio') && 
+        domainCount === 3) {
+        completeSession();
+        return 4;
+    }
+    
+    // Tier 3: Skeletal muscle + Pulmonary + PROs (exactly these 3)
+    if (hasDomain('skeletal_muscle') && 
+        hasDomain('pulmonary') && 
+        hasDomain('pros') && 
+        domainCount === 3) {
+        completeSession();
+        return 3;
+    }
+    
+    // Tier 2: All selections from a single domain
+    if (domainCount === 1) {
+        completeSession();
+        return 2;
+    }
+    
+    // Default: Tier 1 (any other combination not matching above criteria)
+    completeSession();
+    return 1;
 }
 
 function showSummaryTier() {
