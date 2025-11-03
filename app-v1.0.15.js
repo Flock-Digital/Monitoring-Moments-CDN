@@ -60,7 +60,7 @@ let isRestoringSession = false;
 
 const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const toggleLoader = () => loader?.classList.add('cc-hide');
-const logout = () => {
+const logout = async () => {
 	// Remove all localStorage items
 	localStorage.removeItem('user_id');
 	localStorage.removeItem('user_email');
@@ -634,13 +634,13 @@ function handleDeleteNote(noteId, noteElement) {
 let sessionToDelete = null;
 let sessionElementToDelete = null;
 
-function getSavedSessions() {
+async function getSavedSessions() {
 	await apiGetSessions(userId);
 	const stored = localStorage.getItem('saved_sessions');
 	return stored ? JSON.parse(stored) : [];
 }
 
-function saveSessionToStorage(session) {
+async function saveSessionToStorage(session) {
 	const savedSessions = getSavedSessions();
 	
 	const existingIndex = savedSessions.findIndex(s => s.session_id === session.session_id);
@@ -654,14 +654,14 @@ function saveSessionToStorage(session) {
 	localStorage.setItem('saved_sessions', JSON.stringify(savedSessions));
 }
 
-function deleteSessionFromStorage(sessionId) {
+async function deleteSessionFromStorage(sessionId) {
 	const savedSessions = getSavedSessions();
 	const filteredSessions = savedSessions.filter(s => s.session_id !== sessionId);
 	localStorage.setItem('saved_sessions', JSON.stringify(filteredSessions));
 	apiDeleteSession(sessionId);
 }
 
-function getSessionById(sessionId) {
+async function getSessionById(sessionId) {
 	const savedSessions = getSavedSessions();
 	return savedSessions.find(s => s.session_id === sessionId) || null;
 }
@@ -681,7 +681,7 @@ function openSavedSessionsModal() {
 	modal.classList.add('cc-show');
 }
 
-function populateSavedSessionsModal() {
+async function populateSavedSessionsModal() {
 	const savedSessions = getSavedSessions();
 	
 	const contentWrapper = $('#modal-saved-sessions .tab-content-inner');
@@ -1022,7 +1022,7 @@ function validateEmailInput() {
 	}
 }
 
-function handleSendEmailSubmit() {
+async function handleSendEmailSubmit() {
 	const emailInput = $id('send-email');
 	const modal = $id('modal-send-email');
 	const email = emailInput?.value.trim();
