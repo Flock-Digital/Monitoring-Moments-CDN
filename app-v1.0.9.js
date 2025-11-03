@@ -1322,8 +1322,36 @@ function showPage(pageIndex) {
 	checkForCarousel();
 	updateSessionLocation('screen-questions', pageIndex);
 	if (pageIndex === 0) updatePageNavigationForDiseaseState();
-	
+
+	updateNextButtonText();
 	updateFooterTerms();
+}
+
+function updateNextButtonText() {
+	const nextButtonText = pageNavNext?.querySelector('.text-block');
+	if (!nextButtonText) return;
+	
+	if (isOnCarouselPage && currentCarouselInstance) {
+		nextButtonText.textContent = 'Confirm selection';
+		return;
+	}
+	
+	switch(currentPageIndex) {
+		case 0:
+			nextButtonText.textContent = 'Next';
+			break;
+		case 1:
+			nextButtonText.textContent = 'Next';
+			break;
+		case 2:
+			nextButtonText.textContent = 'Confirm selection';
+			break;
+		case 3:
+			nextButtonText.textContent = 'Finish';
+			break;
+		default:
+			nextButtonText.textContent = 'Next';
+	}
 }
 
 function updatePageNavigation() {
@@ -1440,7 +1468,8 @@ function updateCarouselSubtitles(slideIndex) {
 		questionSubtitles[slideIndex].classList.add('cc-active');
 	}
 	lastCarouselSlideIndex = slideIndex;
-	
+
+	updateNextButtonText();
 	updateFooterTerms();
 }
 
