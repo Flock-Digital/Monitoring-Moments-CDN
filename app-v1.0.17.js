@@ -73,6 +73,19 @@ const logout = async () => {
 	window.location.href = '/';
 };
 
+function preventEnterSubmit() {
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Enter' && e.target.tagName !== 'TEXTAREA') {
+			// Allow Enter in textareas for multi-line input
+			const form = e.target.closest('form');
+			if (form) {
+				e.preventDefault();
+				return false;
+			}
+		}
+	});
+}
+
 function initializePatients() {
 	patients = Array.from(patientBubbles).map(bubble => ({
 		id: bubble.id,
@@ -2744,6 +2757,7 @@ function init() {
 	checkValidUser();
 	checkAndInitCarousels();
 	addEventListeners();
+	preventEnterSubmit();
 }
 
 if (document.readyState !== 'loading') {
