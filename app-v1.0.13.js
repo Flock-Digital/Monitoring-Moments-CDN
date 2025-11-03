@@ -118,6 +118,27 @@ function isValidEmail(email) {
 	return emailRegex.test(email);
 }
 
+function formatDateHeader(dateString) {
+	const date = new Date(dateString);
+	const options = { month: 'long', day: 'numeric', year: 'numeric' };
+	return date.toLocaleDateString('en-US', options).replace(',', '') + 'th'; // Add ordinal suffix
+}
+
+function formatTime(timestamp) {
+	const date = new Date(timestamp);
+	let hours = date.getHours();
+	const minutes = date.getMinutes().toString().padStart(2, '0');
+	const ampm = hours >= 12 ? 'pm' : 'am';
+	hours = hours % 12 || 12;
+	return `${hours}:${minutes}${ampm}`;
+}
+
+function escapeHtml(text) {
+	const div = document.createElement('div');
+	div.textContent = text;
+	return div.innerHTML;
+}
+
 // =============================================================================
 // SESSION MANAGEMENT
 // =============================================================================
@@ -512,12 +533,6 @@ function formatNoteDate(timestamp) {
 	return `${day}.${month}.${year}`;
 }
 
-function escapeHtml(text) {
-	const div = document.createElement('div');
-	div.textContent = text;
-	return div.innerHTML;
-}
-
 function handleAddNote() {
 	const textarea = $id('note');
 	const noteText = textarea?.value.trim();
@@ -596,7 +611,7 @@ function getSessionById(sessionId) {
 }
 
 // =============================================================================
-// MODAL POPULATION
+// SAVED SESSION MODAL POPULATION
 // =============================================================================
 
 function openSavedSessionsModal() {
@@ -652,20 +667,6 @@ function groupSessionsByDate(sessions) {
 	return grouped;
 }
 
-function formatDateHeader(dateString) {
-	const date = new Date(dateString);
-	const options = { month: 'long', day: 'numeric', year: 'numeric' };
-	return date.toLocaleDateString('en-US', options).replace(',', '') + 'th'; // Add ordinal suffix
-}
-
-function formatTime(timestamp) {
-	const date = new Date(timestamp);
-	let hours = date.getHours();
-	const minutes = date.getMinutes().toString().padStart(2, '0');
-	const ampm = hours >= 12 ? 'pm' : 'am';
-	hours = hours % 12 || 12;
-	return `${hours}:${minutes}${ampm}`;
-}
 
 function getSessionName(sessions, currentSession) {
 	const index = sessions.findIndex(s => s.session_id === currentSession.session_id);
@@ -907,6 +908,10 @@ function handleViewSummary(session) {
 	}, 1000);
 }
 
+// =============================================================================
+// EMAIL MANAGEMENT
+// =============================================================================
+
 function handleSendEmail(session = null) {
 	openSendEmailModal(session);
 }
@@ -971,7 +976,6 @@ function handleSendEmailSubmit() {
 		return;
 	}
 	
-	// Get session - either from modal attribute or active session
 	const sessionId = modal?.getAttribute('data-session-id');
 	let session;
 	
@@ -986,26 +990,21 @@ function handleSendEmailSubmit() {
 		return;
 	}
 	
-	// TODO: Implement actual email sending via API
 	console.log('Sending email to:', email);
 	console.log('Session data:', session);
 	
 	const sessionsModal = $id('modal-saved-sessions');
 	const modalOverlay = $('.modal-overlay');
 	
-	// If opened from saved sessions, restore the saved sessions modal
 	if (sessionId) {
 		sessionsModal?.classList.remove('cc-backwards');
 		modalOverlay?.classList.remove('cc-no-pointer');
 		
-		// Close send email modal only
 		modal?.classList.remove('cc-show');
 	} else {
-		// Opened from header button - close everything
 		closeAllModals();
 	}
 	
-	// Show success message (temporary until API is implemented)
 	alert(`Email will be sent to: ${email}\nSession ID: ${session.session_id}`);
 }
 
@@ -1288,6 +1287,7 @@ const screenHandlers = {
 		}
 	}
 };
+
 async function showScreen(screenId) {
 	const currentScreen = $('.screen.cc-active');
 	
@@ -1482,13 +1482,13 @@ function updateFooterTerms() {
 	const s = getActiveSession();
 	const pid = s?.patient?.id;
 	
-	// Priority 0: Check if a summary tier is active (on summary screen)
+	// Priority 1: Check if a summary tier is active (on summary screen)
 	const activeSummary = $('.summary.cc-active');
 	if (activeSummary) {
 		tid = activeSummary.getAttribute('terms-id');
 	}
 	
-	// Priority 1: Check if a patient clipboard is active (highest priority on office screen)
+	// Priority 2: Check if a patient clipboard is active (highest priority on office screen)
 	if (!tid) {
 		const activeClipboard = $('.cp-clipboard.cc-active');
 		if (activeClipboard) {
@@ -1496,7 +1496,7 @@ function updateFooterTerms() {
 		}
 	}
 	
-	// Priority 2: Check if on carousel page and get current slide terms-id
+	// Priority 3: Check if on carousel page and get current slide terms-id
 	// ONLY check if we're actually on the questions screen
 	if (!tid && isOnCarouselPage && currentCarouselInstance && $('.screen.cc-active')?.id === 'screen-questions') {
 		// Get all slides in the carousel
@@ -1516,7 +1516,7 @@ function updateFooterTerms() {
 		}
 	}
 	
-	// Priority 3: Check current page - ONLY if on questions screen
+	// Priority 4: Check current page - ONLY if on questions screen
 	if (!tid && pages[currentPageIndex] && $('.screen.cc-active')?.id === 'screen-questions') {
 		tid = pages[currentPageIndex].getAttribute('terms-id');
 		
@@ -1528,7 +1528,7 @@ function updateFooterTerms() {
 		}
 	}
 	
-	// Priority 4: Check current screen
+	// Priority 5: Check current screen
 	if (!tid) {
 		const currentScreen = $('.screen.cc-active');
 		tid = currentScreen?.getAttribute('terms-id');
@@ -2437,11 +2437,8 @@ function refreshSessions() {
 	const session = getActiveSession();
 	
 	if (session) {
-		// Save the active session to saved_sessions before removing it
 		saveSessionToStorage(session);
 	}	
-	
-	// TODO: Part (a) - Send complete active session to API endpoint
 	localStorage.removeItem('active_session');
 }
 
@@ -2629,19 +2626,15 @@ function closeSendEmailModal() {
 	const modalOverlay = $('.modal-overlay');
 	
 	if (!sendEmailModal) return;
-	
-	// Check if we came from saved sessions modal
+
 	const sessionId = sendEmailModal.getAttribute('data-session-id');
 	
 	if (sessionId) {
-		// Restore saved sessions modal
 		sessionsModal?.classList.remove('cc-backwards');
 		modalOverlay?.classList.remove('cc-no-pointer');
 		
-		// Close send email modal
 		sendEmailModal.classList.remove('cc-show');
 	} else {
-		// Not from saved sessions, close everything
 		closeAllModals();
 	}
 }
@@ -2693,13 +2686,6 @@ function addEventListeners() {
 // =============================================================================
 
 function init() {
-
-	console.log('=== INIT DEBUG ===');
-	console.log('user_id:', localStorage.getItem('user_id'));
-	console.log('active_session:', localStorage.getItem('active_session'));
-	console.log('saved_sessions:', localStorage.getItem('saved_sessions'));
-	console.log('==================');
-	
 	initializePatients();
 	checkValidUser();
 	checkAndInitCarousels();
