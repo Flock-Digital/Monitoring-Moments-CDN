@@ -1379,6 +1379,8 @@ function goToNextPage() {
 			alert('Please select a disease state or enter a custom description');
 			return;
 		}
+
+		$('.cp-disease-selector')?.classList.remove('cc-open');
 	}
 	
 	if (isOnCarouselPage && currentCarouselInstance) {
@@ -2402,6 +2404,10 @@ function cleanupAllScreens() {
 	[patientProfiles, patientBackgrounds, patientOfficeBackgrounds, 
 	 patientFinalBackgrounds, patientBubbles].forEach(collection => {
 		collection.forEach(item => item.classList.remove('cc-active'));
+	});
+
+	headerStepIndicators.forEach(step => {
+		step.classList.remove('cc-active', 'cc-visited');
 	});
 	
 	resetDiseaseStateForm();
