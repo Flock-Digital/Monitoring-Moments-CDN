@@ -67,7 +67,7 @@ const logout = async () => {
 	localStorage.removeItem('active_session');
 	localStorage.removeItem('saved_sessions');
 
-	await apiPostLogout(userId);
+	await apiPostLogout();
 	
 	// Redirect to home/login screen
 	window.location.href = '/';
@@ -147,42 +147,39 @@ function escapeHtml(text) {
 // API INTEGRATION
 // =============================================================================
 
-async function apiGetUserData(userId) {
+async function apiGetUserData() {
 	console.log("Called apiGetUserData");	
 }
 
-async function apiPostLogout(userId) {
+async function apiPostLogout() {
 	console.log("Called apiPostLogout");
 }
 
-// SESSION APIs
-async function apiPostSession(sessionData) {
+async function apiPostSession() {
 	console.log("Called apiPostSession");
 }
 
-async function apiGetSessions(userId) {
+async function apiGetSessions() {
 	console.log("Called apiGetSessions");
 }
 
-async function apiPatchSession(sessionId, updates) {
+async function apiPatchSession() {
 	console.log("Called apiPatchSession");
 }
 
-async function apiDeleteSession(sessionId) {
+async function apiDeleteSession() {
 	console.log("Called apiDeleteSession");
 }
 
-
-async function apiPostNote(sessionId, noteData) {
+async function apiPostNote() {
 	console.log("Called apiPostNote");
 }
 
-async function apiDeleteNote(sessionId, noteId) {
+async function apiDeleteNote(sessionId) {
 	console.log("Called apiDeleteNote");
 }
 
-// EMAIL API
-async function apiPostEmail(sessionId, email) {
+async function apiPostEmail(sessionId) {
 	console.log("Called apiPostEmail");
 }
 
@@ -205,7 +202,7 @@ function createNewSession() {
 		notes: [],
 		summary: { tier: '', summary_title: '' }
 	};
-	apiPostSession(newSession);
+	apiPostSession();
 	// TODO: login to store new active session based on API response
 	localStorage.setItem('active_session', JSON.stringify(newSession));
 	return newSession;
@@ -225,7 +222,7 @@ function updateActiveSession(updates) {
 	const updatedSession = { ...session, ...updates };
 	localStorage.setItem('active_session', JSON.stringify(updatedSession));
 
-	apiPatchSession(updatedSession.session_id, updates);
+	apiPatchSession();
 	
 	return updatedSession;
 }
@@ -439,7 +436,7 @@ function addNoteToSession(noteText, screenName) {
 	const notes = session.notes || [];
 	notes.push(note);
 
-	apiPostNote(session.session_id, note);	
+	apiPostNote();	
 	updateActiveSession({ notes: notes });
 }
 
@@ -450,7 +447,7 @@ function deleteNoteFromSession(noteId) {
 	const notes = session.notes || [];
 	const filteredNotes = notes.filter(note => note.note_id !== noteId);
 
-	apiDeleteNote(session.session_id, noteId);
+	apiDeleteNote();
 	updateActiveSession({ notes: filteredNotes });
 }
 
@@ -635,7 +632,7 @@ let sessionToDelete = null;
 let sessionElementToDelete = null;
 
 async function getSavedSessions() {
-	await apiGetSessions(userId);
+	await apiGetSessions();
 	const stored = localStorage.getItem('saved_sessions');
 	return stored ? JSON.parse(stored) : [];
 }
@@ -658,7 +655,7 @@ async function deleteSessionFromStorage(sessionId) {
 	const savedSessions = getSavedSessions();
 	const filteredSessions = savedSessions.filter(s => s.session_id !== sessionId);
 	localStorage.setItem('saved_sessions', JSON.stringify(filteredSessions));
-	apiDeleteSession(sessionId);
+	apiDeleteSession();
 }
 
 async function getSessionById(sessionId) {
@@ -1061,7 +1058,7 @@ async function handleSendEmailSubmit() {
 		closeAllModals();
 	}
 	
-	await apiPostEmail(session.session_id, email);
+	await apiPostEmail();
 	alert(`Email will be sent to: ${email}\nSession ID: ${session.session_id}`);
 }
 
