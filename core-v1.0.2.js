@@ -879,4 +879,9 @@ function checkAndInitCarousels() {
 	}
 	
 	window.addEventListener('resize', resizeFeather);
-	document.addEventListener('DOMContentLoaded', initializeFeather); 
+  
+    if (document.readyState !== 'loading') {
+        initializeFeather();
+    } else {
+        document.addEventListener('DOMContentLoaded', initializeFeather);
+    }
