@@ -2109,6 +2109,7 @@ function createCustomChecklistItem(groupId, toolName, frequencyId, frequencyTitl
 	appendCustomChecklistItemToDOM(groupId, itemData);
 	closeAllModals();
 	currentCustomGroupId = null;
+	toggleOtherHeader();
 }
 
 function updateCustomChecklistItem(toolName, frequencyId, frequencyTitle) {
@@ -2138,6 +2139,7 @@ function updateCustomChecklistItem(toolName, frequencyId, frequencyTitle) {
 	closeAllModals();
 	currentChecklistItem = null;
 	isEditMode = false;
+	toggleOtherHeader();
 }
 
 function appendCustomChecklistItemToDOM(groupId, itemData) {
@@ -2216,7 +2218,18 @@ function deleteCustomChecklistItem(item) {
 	closeAllModals();
 	currentChecklistItem = null;
 	isEditMode = false;
+	toggleOtherHeader();
 }
+
+function toggleOtherHeader() {
+	const customTools11 = $id('custom-tools-11');
+	const header = $id('checklist-other-header');
+	if (!customTools11 || !header) return;
+	
+	const hasChildren = customTools11.children.length > 0;
+	header.style.display = hasChildren ? 'none' : 'block';
+}
+
 
 
 // =============================================================================
