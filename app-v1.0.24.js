@@ -1400,7 +1400,9 @@ function updateNextButtonText() {
 	if (!nextButtonText) return;
 	
 	if (isOnCarouselPage && currentCarouselInstance) {
-		nextButtonText.textContent = 'Next';
+		// Check if we're on the last carousel item
+		const isLastSlide = currentCarouselInstance.index === currentCarouselInstance.slides.length - 1;
+		nextButtonText.textContent = isLastSlide ? 'Complete selection' : 'Next';
 		return;
 	}
 	
@@ -1412,7 +1414,13 @@ function updateNextButtonText() {
 			nextButtonText.textContent = 'Next';
 			break;
 		case 2:
-			nextButtonText.textContent = 'Next';
+			// Handle carousel within the switch as a fallback
+			if (currentCarouselInstance) {
+				const isLastSlide = currentCarouselInstance.index === currentCarouselInstance.slides.length - 1;
+				nextButtonText.textContent = isLastSlide ? 'Complete selection' : 'Next';
+			} else {
+				nextButtonText.textContent = 'Next';
+			}
 			break;
 		case 3:
 			nextButtonText.textContent = 'Next';
