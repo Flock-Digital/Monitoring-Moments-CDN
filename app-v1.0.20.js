@@ -1183,7 +1183,7 @@ const UI_VISIBILITY_MAP = {
 		headerSteps: false,
 		footerButtons: false,
 		footerSavedSessions: true,
-		footerJobCode: true,
+		footerJobCode: false,
 		logoutButton: true
 	},
 	'screen-welcome': {
