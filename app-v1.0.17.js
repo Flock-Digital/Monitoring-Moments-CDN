@@ -1413,8 +1413,11 @@ function updateNextButtonText() {
 			nextButtonText.textContent = 'Confirm selection';
 			break;
 		case 3:
-			nextButtonText.textContent = 'Finish';
+			nextButtonText.textContent = 'Next';
 			break;
+		case 4:
+			nextButtonText.textContent = 'Finish';
+			break;			
 		default:
 			nextButtonText.textContent = 'Next';
 	}
