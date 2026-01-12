@@ -355,6 +355,8 @@ function restoreChecklistItems(session) {
 			restoreStandardChecklistItem(itemData);
 		}
 	});
+
+	toggleOtherHeader();
 }
 
 function restoreStandardChecklistItem(itemData) {
