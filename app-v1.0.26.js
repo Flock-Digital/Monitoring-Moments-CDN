@@ -1395,13 +1395,14 @@ function showPage(pageIndex) {
 	updateFooterTerms();
 }
 
-function updateNextButtonText() {
+function updateNextButtonText(slideIndex = null) {
 	const nextButtonText = pageNavNext?.querySelector('.text-block');
 	if (!nextButtonText) return;
 	
 	if (isOnCarouselPage && currentCarouselInstance) {
-		// Check if we're on the last carousel item
-		const isLastSlide = currentCarouselInstance.index === currentCarouselInstance.length - 1;
+		// Use passed slideIndex if provided, otherwise use current carousel index
+		const currentIndex = slideIndex !== null ? slideIndex : currentCarouselInstance.index;
+		const isLastSlide = currentIndex === currentCarouselInstance.length - 1;
 		nextButtonText.textContent = isLastSlide ? 'Complete selection' : 'Next';
 		return;
 	}
@@ -1416,7 +1417,8 @@ function updateNextButtonText() {
 		case 2:
 			// Handle carousel within the switch as a fallback
 			if (currentCarouselInstance) {
-				const isLastSlide = currentCarouselInstance.index === currentCarouselInstance.length - 1;
+				const currentIndex = slideIndex !== null ? slideIndex : currentCarouselInstance.index;
+				const isLastSlide = currentIndex === currentCarouselInstance.length - 1;
 				nextButtonText.textContent = isLastSlide ? 'Complete selection' : 'Next';
 			} else {
 				nextButtonText.textContent = 'Next';
@@ -1550,7 +1552,7 @@ function updateCarouselSubtitles(slideIndex) {
 	}
 	lastCarouselSlideIndex = slideIndex;
 
-	updateNextButtonText();
+	updateNextButtonText(slideIndex);
 	updateFooterTerms();
 }
 
