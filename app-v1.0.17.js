@@ -1314,7 +1314,6 @@ const screenHandlers = {
 		enter: async () => { 
 			await wait(1000);
 			const bubbles = [
-				$('.speech-bubble-mini.cc-amina'),
 				$('.speech-bubble-mini.cc-daniel'),
 				$('.speech-bubble-mini.cc-olivia'),
 				$('.speech-bubble-mini.cc-luis')
