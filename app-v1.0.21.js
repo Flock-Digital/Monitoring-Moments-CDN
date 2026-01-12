@@ -112,7 +112,7 @@ function buildUi() {
 			} else {
 				updateUiVisibility('screen-home');
 				homeWelcome?.classList.add('cc-active');
-				footerJobCode?.classList.add('cc-active');
+				//footerJobCode?.classList.add('cc-active');
 				updateFooterTerms();
 			}
 		}, 300);
