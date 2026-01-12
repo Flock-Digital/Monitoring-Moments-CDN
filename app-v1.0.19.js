@@ -1398,7 +1398,7 @@ function updateNextButtonText() {
 	if (!nextButtonText) return;
 	
 	if (isOnCarouselPage && currentCarouselInstance) {
-		nextButtonText.textContent = 'Confirm selection';
+		nextButtonText.textContent = 'Next';
 		return;
 	}
 	
@@ -1410,7 +1410,7 @@ function updateNextButtonText() {
 			nextButtonText.textContent = 'Next';
 			break;
 		case 2:
-			nextButtonText.textContent = 'Confirm selection';
+			nextButtonText.textContent = 'Next';
 			break;
 		case 3:
 			nextButtonText.textContent = 'Next';
